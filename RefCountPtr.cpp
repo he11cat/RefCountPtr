@@ -44,6 +44,8 @@ int main()
 
     p2 = p1;
 
+    RefCountPtr<My> p3 = p2 = p2;
+
     My m;
 
     My* p = &p1;
