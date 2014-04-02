@@ -52,5 +52,10 @@ int main()
 
     My& pr = *p2;
 
+    RefCountPtr<My> movedLater = new My();
+    movedLater = move(p3);
+
+    RefCountPtr<My> moved = move(movedLater);
+
     return 0;
 }

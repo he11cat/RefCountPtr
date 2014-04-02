@@ -44,28 +44,40 @@ class RefCountPtr
             ptr->addRef();
         }
 
+        RefCountPtr(RefCountPtr&& another)
+        {
+            ptr = another.ptr;
+            another.ptr = NULL;
+        }
+
         RefCountPtr& operator = (const RefCountPtr& another)
         {
             if (this == &another)return *this;
 
-            if (ptr != NULL && ptr->removeRef() == 0)
-            {
-                ptr->release();
-                ptr = NULL;
-            }
+            detach();
 
             ptr = another.ptr;
             ptr->addRef();
+
+            return *this;
+        }
+
+        RefCountPtr& operator = (RefCountPtr && another)
+        {
+            if (this->ptr != another.ptr)
+            {
+                detach();
+
+                ptr = another.ptr;
+                another.ptr = NULL;
+            }
+
             return *this;
         }
 
         ~RefCountPtr()
         {
-            if (ptr->removeRef() == 0)
-            {
-                ptr->release();
-                ptr = NULL;
-            }
+            detach();
         }
 
         T* operator&()
@@ -76,6 +88,16 @@ class RefCountPtr
         T& operator*()
         {
             return *ptr;
+        }
+
+    protected:
+        void detach()
+        {
+            if (ptr != NULL && ptr->removeRef() == 0)
+            {
+                ptr->release();
+                ptr = NULL;
+            }
         }
 
     private:
