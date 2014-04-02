@@ -46,6 +46,8 @@ class RefCountPtr
 
         RefCountPtr& operator = (const RefCountPtr& another)
         {
+            if (this == &another)return *this;
+
             if (ptr != NULL && ptr->removeRef() == 0)
             {
                 ptr->release();
